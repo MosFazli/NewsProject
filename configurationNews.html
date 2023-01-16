@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Configuration Page</title>
+    <link rel="icon" href="assets/images/icons/favico.png">
+</head>
+
+<body>
+
+<div>
+    <img src="assets/images/icons/back_icon.png" class="backIcon" onclick="backButtonClicked()">
+</div>
+
+<div id="title">
+    <div class="wrapper" id="contactTitle">
+        <div class="bg">Configuration categories</div>
+        <div class="fg">Configuration categories</div>
+    </div>
+</div>
+
+<div class="cardConfigurationContainer">
+    <div class="cardConfiguration" id="cardConfiguration" style="display:none;">
+        <h2>
+            Enter Categories that you want:
+        </h2>
+        <form>
+            <select name="news" class="configurationNewsOption" id="sportOption" multiple>
+                <option value="Sports">Sports</option>
+            </select>
+            <select name="news" class="configurationNewsOption" id="healthOption" multiple>
+                <option value="Health">Health</option>
+            </select>
+            <select name="news" class="configurationNewsOption" id="politicsOption" multiple>
+                <option value="Politics">Politics</option>
+            </select>
+            <select name="news" class="configurationNewsOption" id="economicsOption" multiple>
+                <option value="Economics">Economics</option>
+            </select>
+            <select name="news" class="configurationNewsOption" id="technologyOption" multiple>
+                <option value="Technology">Technology</option>
+            </select>
+            <br><br>
+            <button type="button" class="btn" onclick="openNewsPage()">Submit</button>
+        </form>
+        <h2 class="configurationsNewsGuide">
+            Hold down the Ctrl (windows) or Command (Mac) button to unselect and select options.
+        </h2>
+    </div>
+</div>
+
+
+<script>
+
+    var passedText = window.location.hash.substring(1);
+
+    if (passedText == "Authorized!") {
+        document.getElementById("cardConfiguration").style.display = "inline";
+    }
+
+    var hostURL = "http://localhost:63342/NewsProjectUni/";
+    var serverURL = "http://127.0.0.1:8000/";
+
+    // var hostURL = "https://new.iran.liara.run/";
+    // var serverURL = "https://newsprojectuni.pythonanywhere.com/";
+
+    var passedText = "NotAuthorize"
+    var newConfigurationUrl = hostURL + "configurationNews.html"
+    var showNewsUrl = hostURL + "showNews.html"
+    var usersUrlApi = serverURL + "users/";
+    var newsUrlApi = serverURL + "news/";
+
+    function backButtonClicked() {
+        passedText = window.location.hash.substring(1)
+        if (passedText == "Authorized!") {
+            window.location.href = hostURL + '#' + "Authorized!";
+        } else {
+            window.location.href = hostURL;
+        }
+    }
+
+    function openNewsPage() {
+        passedText = window.location.hash.substring(1)
+        var categories = document.getElementById("sportOption").value + "|" + document.getElementById("healthOption").value + "|" + document.getElementById("politicsOption").value + "|" + document.getElementById("economicsOption").value + "|" + document.getElementById("technologyOption").value
+        console.log(categories)
+        if (passedText == "Authorized!") {
+            window.location.href = showNewsUrl + "?" + categories + "#" + "Authorized!";
+        } else {
+            window.location.href = showNewsUrl;
+        }
+    }
+
+
+</script>
+
+</body>
+</html>

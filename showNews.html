@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>News Page</title>
+    <link rel="icon" href="assets/images/icons/favico.png">
+</head>
+<body>
+
+<div id="title">
+    <div class="wrapper" id="contactTitle">
+        <div class="bg">News Page</div>
+        <div class="fg">News Page</div>
+    </div>
+</div>
+
+<div>
+    <img src="assets/images/icons/back_icon.png" class="backIcon" onclick="backButtonClicked()">
+</div>
+
+<div>
+    <table id="table" border="1">
+    </table>
+
+    <div class="modal">
+        <div class="modal-header">
+            <span class="close-btn">&times;</span>
+        </div>
+        <div class="modal-content" id="modal-content">
+            <p>this is the text inside the modal</p>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    var hostURL = "http://localhost:63342/NewsProjectUni/";
+    var serverURL = "http://127.0.0.1:8000/";
+
+    // var hostURL = "https://new.iran.liara.run/";
+    // var serverURL = "https://newsprojectuni.pythonanywhere.com/";
+
+    var newsUrlApi = serverURL + "news";
+
+    function backButtonClicked() {
+        passedText = window.location.hash.substring(1)
+        if (passedText == "Authorized!") {
+            window.location.href = hostURL + '#' + "Authorized!";
+        } else {
+            window.location.href = hostURL;
+        }
+    }
+
+    var slug = window.location.href;
+    var firstFilter = slug.split("?")
+    var secondFilter = firstFilter[1].split("#")
+    var thirdFilter = secondFilter[0].split("|")
+    thirdFilter.filter(n => n)
+
+    function compare( a, b ) {
+        if ( a.ViewCounter < b.ViewCounter ){
+            return 1;
+        }
+        if ( a.ViewCounter > b.ViewCounter ){
+            return -1;
+        }
+        return 0;
+    }
+
+    function getNews() {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = this.responseText;
+                const newsArray = JSON.parse(response);
+                newsArray.sort(compare)
+                console.log(newsArray)
+                document.getElementById("table").innerHTML = "<tr>" +
+                    "<th>ID</th>" +
+                    "<th>Title</th>" +
+                    "<th>Class</th>" +
+                    "<th>Views</th>" +
+                    "</tr>";
+                for (let i = 0; i < newsArray.length; i++) {
+                    for (let j = 0; j < thirdFilter.length; j++) {
+                        if (newsArray[i].NewClass == thirdFilter[j]) {
+                            document.getElementById("table").innerHTML += "<tr onclick='showModal(\"" + newsArray[i].id + "\", \"" + newsArray[i].NewTitle + "\", \"" + newsArray[i].NewBody + "\", \"" + newsArray[i].NewClass + "\", \"" + newsArray[i].ViewCounter + "\")'><td>" + newsArray[i].id + "</td>" + "<td>" + newsArray[i].NewTitle + "</td>" + "<td>" + newsArray[i].NewClass + "</td>" + "<td>" + newsArray[i].ViewCounter + "</td></tr>";
+                        }
+                    }
+                }
+            }
+        };
+        xmlhttp.open("GET", newsUrlApi, true);
+        xmlhttp.setRequestHeader("Content-type", "application/json");
+        xmlhttp.send();
+    }
+
+    setInterval(getNews, 1000)
+
+    function updateNewView(newID, newTitle, newBody, newClass, viewCount) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = this.responseText;
+            }
+        };
+        xmlhttp.open("PUT", newsUrlApi + "/" + newID, true);
+        xmlhttp.setRequestHeader("Content-type", "application/json");
+        var viewsParams = JSON.stringify({
+            "NewBody": newBody,
+            "NewTitle": newTitle,
+            "ViewCounter": parseInt(viewCount) + 1,
+        });
+        xmlhttp.send(viewsParams);
+    }
+
+    function showModal(newID, newTitle, newBody, newClass, viewCount) {
+        updateNewView(newID, newTitle, newBody, newClass, viewCount)
+        document.getElementById("modal-content").innerHTML = newBody;
+        modal.style.display = "block"
+    }
+
+    let modal = document.querySelector(".modal")
+    let closeBtn = document.querySelector(".close-btn")
+    closeBtn.onclick = function () {
+        modal.style.display = "none"
+    }
+    window.onclick = function (e) {
+        if (e.target == modal) {
+            modal.style.display = "none"
+        }
+    }
+
+</script>
+
+</body>
+</html>

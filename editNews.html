@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Change News Page</title>
+    <link rel="icon" href="assets/images/icons/favico.png">
+</head>
+<body>
+
+<div>
+    <img src="assets/images/icons/back_icon.png" class="backIcon" onclick="backButtonClicked()">
+</div>
+
+<div id="title">
+    <div class="wrapper" id="contactTitle">
+        <div class="bg">Edit News</div>
+        <div class="fg">Edit News</div>
+    </div>
+</div>
+
+<div>
+    <button class="btn">Add New</button>
+    <table class="newsContainer" id="newsContainer" border="1">
+
+    </table>
+</div>
+
+
+<script>
+
+    var hostURL = "http://localhost:63342/NewsProjectUni/";
+    var serverURL = "http://127.0.0.1:8000/";
+    var newsUrlApi = serverURL + "news";
+
+    function backButtonClicked() {
+        window.location.href = hostURL;
+    }
+
+    function compare( a, b ) {
+        if ( a.ViewCounter < b.ViewCounter ){
+            return 1;
+        }
+        if ( a.ViewCounter > b.ViewCounter ){
+            return -1;
+        }
+        return 0;
+    }
+
+    function getNews() {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = this.responseText;
+                const newsArray = JSON.parse(response);
+                newsArray.sort(compare)
+                console.log(newsArray)
+                document.getElementById("newsContainer").innerHTML = "<tr>" +
+                    "<th>ID</th>" +
+                    "<th>Title</th>" +
+                    "<th>Class</th>" +
+                    "<th>Views</th>" +
+                    "</tr>";
+                for (let i = 0; i < newsArray.length; i++) {
+                    document.getElementById("newsContainer").innerHTML += "<tr onclick='showModal(\"" + newsArray[i].id + "\", \"" + newsArray[i].NewTitle + "\", \"" + newsArray[i].NewBody + "\", \"" + newsArray[i].NewClass + "\", \"" + newsArray[i].ViewCounter + "\")'><td>" + newsArray[i].id + "</td>" + "<td>" + newsArray[i].NewTitle + "</td>" + "<td>" + newsArray[i].NewClass + "</td>" + "<td>" + newsArray[i].ViewCounter + "</td></tr>";
+                }
+            }
+        };
+        xmlhttp.open("GET", newsUrlApi, true);
+        xmlhttp.setRequestHeader("Content-type", "application/json");
+        xmlhttp.send();
+    }
+
+    setInterval(getNews, 1000)
+</script>
+</body>
+</html>

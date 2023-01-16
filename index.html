@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>News project University</title>
+    <link rel="icon" href="assets/images/icons/favico.png">
+</head>
+
+<body>
+
+<div id="title">
+    <div class="wrapper" id="contactTitle">
+        <div class="bg"> News Project University</div>
+        <div class="fg"> News Project University</div>
+    </div>
+    <h3>Master: Dr. Hossein Morshedloo</h3>
+    <h3>Shahrood university of technology</h3>
+    <h3>Studnet: Mostafa Fazli - 9822803</h3>
+</div>
+
+<div class="viewsCount">
+    <h1>Total views: <span id="viewsCount"> 80</span></h1>
+</div>
+
+<div>
+    <div class="cardAuthorizeContainer" id="cardAuthorizeContainer">
+        <div class="cardAuthorize" id="leftCard">
+            <img src="assets/images/icons/register_icon.png" class="cardAuthorizeIcon">
+            <h1>
+                Register
+            </h1>
+            <p>
+                Register with email and password to access news
+            </p>
+
+            <form>
+                <div class="input-container">
+                    <input type="text" required="" id="registerEmail"/>
+                    <label>Email</label>
+                </div>
+                <div class="input-container">
+                    <input type="password" required="" id="registerPassword"/>
+                    <label>Password</label>
+                </div>
+                <button type="button" class="btn" onclick="sendRegisterData()">Register</button>
+            </form>
+
+        </div>
+
+        <div class="cardAuthorize" id="middleCard">
+            <img src="assets/images/icons/login_icon.png" class="cardAuthorizeIcon">
+            <h1>
+                Login
+            </h1>
+            <p>
+                Login with your account to access news
+            </p>
+
+            <form>
+                <div class="input-container">
+                    <input type="text" required="" id="loginEmail"/>
+                    <label>Email</label>
+                </div>
+                <div class="input-container">
+                    <input type="password" required="" id="loginPassword"/>
+                    <label>Password</label>
+                </div>
+                <button type="button" class="btn" onclick="sendLoginData()">Login</button>
+            </form>
+        </div>
+
+        <div class="cardAuthorize" id="rightCard">
+            <img src="assets/images/icons/manageNews_icon.png" class="cardAuthorizeIcon">
+            <h1>
+                Manage News
+            </h1>
+            <p>
+                Login to add or remove or edit news
+            </p>
+
+            <form>
+                <div class="input-container">
+                    <input type="text" required="" id="managerEmail"/>
+                    <label>Email</label>
+                </div>
+                <div class="input-container">
+                    <input type="password" required="" id="managerPassword"/>
+                    <label>Password</label>
+                </div>
+                <button type="button" class="btn" onclick="sendManagerData()">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="cardAuthorizedContainer" id="cardAuthorizedContainer">
+        <h1>You are Authorized !</h1>
+        <h2>Click to enter the news selection page</h2>
+        <button type="button" class="btn"
+                onclick="window.open('http://localhost:63342/NewsProjectUni/configurationNews.html#Authorized!')">Login
+        </button>
+        <button type="button" class="btn" onclick="window.open('http://localhost:63342/NewsProjectUni/')">
+            logout
+        </button>
+    </div>
+</div>
+
+<script>
+
+    var hostURL = "http://localhost:63342/NewsProjectUni/";
+    var serverURL = "http://127.0.0.1:8000/";
+
+    // var hostURL = "https://new.iran.liara.run/";
+    // var serverURL = "https://newsprojectuni.pythonanywhere.com/";
+
+    var newConfigurationUrl = hostURL + "configurationNews.html"
+    var editNewsUrl = hostURL + "editNews.html"
+    var usersUrlApi = serverURL + "users";
+    var managersUrlApi = serverURL + "managers";
+    var newsUrlApi = serverURL + "news";
+    var viewsUrlApi = serverURL + "views";
+    var viewsUrlApiChange = serverURL + "views/1";
+    var viewCountVar = 0
+    var registerValidationEmail = false
+    var registerValidationPassword = false
+
+    var loginValidationEmail = false
+    var loginValidationPassword = false
+
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            var response = this.responseText;
+            const viewsArray = JSON.parse(response);
+            document.getElementById("viewsCount").innerHTML = viewsArray[0].viewsCount;
+            updateViewCount(viewsArray[0].viewsCount);
+        }
+    };
+    xmlhttp.open("GET", viewsUrlApi, true);
+    xmlhttp.setRequestHeader("Content-type", "application/json");
+    xmlhttp.send();
+
+    function updateViewCount(count) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = this.responseText;
+            }
+        };
+        xmlhttp.open("PUT", viewsUrlApiChange, true);
+        xmlhttp.setRequestHeader("Content-type", "application/json");
+        var viewsParams = JSON.stringify({
+            "viewsCount": count + 1,
+        });
+        xmlhttp.send(viewsParams);
+    }
+
+    var passedText = window.location.hash.substring(1)
+    if (passedText == "Authorized!") {
+        document.getElementById("cardAuthorizedContainer").style.display = "inline";
+        document.getElementById("cardAuthorizeContainer").style.display = "none";
+    } else {
+        document.getElementById("cardAuthorizedContainer").style.display = "none";
+        document.getElementById("cardAuthorizeContainer").style.display = "flex";
+    }
+
+    function hashingFunction(str) {
+        let hash = 0;
+        for (let i = 0, len = str.length; i < len; i++) {
+            let chr = str.charCodeAt(i);
+            hash = (hash << 5) - hash + chr;
+            hash |= 0;
+        }
+        return hash;
+    }
+
+    const validateEmail = (email) => {
+        return email.match(
+            /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
+    };
+
+    function checkEmailRegisterValidation() {
+        var registerEmail = document.getElementById("registerEmail").value;
+        if (validateEmail(registerEmail)) {
+            document.getElementById("registerEmail").style.setProperty("color", "green");
+            registerValidationEmail = true;
+        } else {
+            document.getElementById("registerEmail").style.setProperty("color", "red")
+            registerValidationEmail = false;
+        }
+    }
+
+    function checkPasswordRegisterValidation() {
+        var registerPassword = document.getElementById("registerPassword").value;
+        if (registerPassword.length > 5) {
+            document.getElementById("registerPassword").style.setProperty("color", "green");
+            registerValidationPassword = true;
+        } else {
+            document.getElementById("registerPassword").style.setProperty("color", "red");
+            registerValidationPassword = false;
+        }
+    }
+
+    function sendRegisterData() {
+        if (registerValidationEmail == true && registerValidationPassword == true) {
+            var registerEmail = document.getElementById("registerEmail").value;
+            var registerPassword = document.getElementById("registerPassword").value;
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    this.responseText;
+                }
+            };
+            xmlhttp.open("POST", usersUrlApi, true);
+            xmlhttp.setRequestHeader("Content-type", "application/json");
+            var registerParams = JSON.stringify({
+                "email": registerEmail.toLowerCase(),
+                "password": hashingFunction(registerPassword)
+            });
+            alert("Your registration was successful!")
+            xmlhttp.send(registerParams);
+            window.location.href = newConfigurationUrl + '#' + "Authorized!";
+        } else {
+            alert("Email or password not valid")
+        }
+    }
+
+    function checkEmailLoginValidation() {
+        var loginEmail = document.getElementById("loginEmail").value;
+        if (validateEmail(loginEmail)) {
+            document.getElementById("loginEmail").style.setProperty("color", "green");
+            loginValidationEmail = true;
+        } else {
+            document.getElementById("loginEmail").style.setProperty("color", "red")
+            loginValidationEmail = false;
+        }
+    }
+
+    function checkPasswordLoginValidation() {
+        var loginPassword = document.getElementById("loginPassword").value;
+        if (loginPassword.length > 5) {
+            document.getElementById("loginPassword").style.setProperty("color", "green");
+            loginValidationPassword = true;
+        } else {
+            document.getElementById("loginPassword").style.setProperty("color", "red");
+            loginValidationPassword = false;
+        }
+    }
+
+    function sendLoginData() {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = this.responseText;
+                const usersArray = JSON.parse(response);
+                var loginEmail = document.getElementById("loginEmail").value;
+                var loginPassword = hashingFunction(document.getElementById("loginPassword").value);
+                var isAuthorized = false;
+                for (let i = 0; i < usersArray.length; i++) {
+                    if (usersArray[i].email == loginEmail.toLowerCase() && usersArray[i].password == loginPassword) {
+                        isAuthorized = true;
+                    }
+                }
+                if (isAuthorized == true) {
+                    alert("Welcome sir !")
+                    window.location.href = newConfigurationUrl + '#' + "Authorized!";
+                } else {
+                    alert("Email or Password is not matched!")
+                }
+            }
+        };
+        xmlhttp.open("GET", usersUrlApi, true);
+        xmlhttp.setRequestHeader("Content-type", "application/json");
+        xmlhttp.send();
+    }
+
+    function sendManagerData() {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = this.responseText;
+                const managersArray = JSON.parse(response);
+                var managerEmail = document.getElementById("managerEmail").value;
+                var managerPassword = document.getElementById("managerPassword").value;
+                var isAuthorizedManager = false;
+                for (let i = 0; i < managersArray.length; i++) {
+                    if (managersArray[i].email == managerEmail.toLowerCase() && managersArray[i].password == managerPassword) {
+                        isAuthorizedManager = true;
+                    }
+                }
+                if (isAuthorizedManager == true) {
+                    alert("Welcome sir !")
+                    window.location.href = editNewsUrl;
+                } else {
+                    alert("Email or Password is not matched!")
+                }
+            }
+        };
+        xmlhttp.open("GET", managersUrlApi, true);
+        xmlhttp.setRequestHeader("Content-type", "application/json");
+        xmlhttp.send();
+    }
+
+    function checkEmailManagerValidation() {
+        var managerEmail = document.getElementById("managerEmail").value;
+        if (validateEmail(managerEmail)) {
+            document.getElementById("managerEmail").style.setProperty("color", "green");
+            managerValidationEmail = true;
+        } else {
+            document.getElementById("managerEmail").style.setProperty("color", "red")
+            managerValidationEmail = false;
+        }
+    }
+
+    function checkPasswordManagerValidation() {
+        var managerPassword = document.getElementById("managerPassword").value;
+        if (managerPassword.length > 5) {
+            document.getElementById("managerPassword").style.setProperty("color", "green");
+            managerValidationPassword = true;
+        } else {
+            document.getElementById("managerPassword").style.setProperty("color", "red");
+            managerValidationPassword = false;
+        }
+    }
+
+
+    setInterval(checkEmailRegisterValidation, 100)
+    setInterval(checkPasswordRegisterValidation, 100)
+    setInterval(checkEmailLoginValidation, 100)
+    setInterval(checkPasswordLoginValidation, 100)
+    setInterval(checkEmailManagerValidation, 100)
+    setInterval(checkPasswordManagerValidation, 100)
+
+
+</script>
+
+</body>
+</html>
